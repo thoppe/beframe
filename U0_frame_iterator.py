@@ -19,7 +19,7 @@ class Streamer:
 
     @property
     def fps(self):
-        return int(self.stream.get(cv2.CAP_PROP_FPS))
+        return self.stream.get(cv2.CAP_PROP_FPS)
 
     def __len__(self):
         return (self.n_frames) // self.frame_capture_unit

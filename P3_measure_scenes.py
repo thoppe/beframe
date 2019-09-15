@@ -19,7 +19,7 @@ cols = df.columns
 
 keep_cols = [
     'Start Frame', 'Scene Number', 'Length (frames)', 'Length (seconds)']
-scenes = pd.read_csv(f_scenes, skiprows=1, usecols=keep_cols)
+scenes = pd.read_csv(f_scenes, skiprows=1)# usecols=keep_cols)
 
 # Fill in the scene information onto the shot dataframe
 df['scene_n'] = None
