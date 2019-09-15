@@ -19,9 +19,7 @@ os.system(f"mkdir -p {save_dest}")
 f_save = os.path.join(save_dest, os.path.basename(f_movie) + '.csv')
 
 data = []
-for n, frame in tqdm(Streamer(f_movie, 0.25)):
-    print(frame.shape)
-    exit()
+for n, frame in tqdm(Streamer(f_movie, None)):
 
     # Convert to torch.Tensor, then fastai.tensor
     img = pil2tensor(frame, np.float32).div_(255)
