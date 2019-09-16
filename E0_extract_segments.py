@@ -1,43 +1,32 @@
 import pandas as pd
 import numpy as np
 from tqdm import tqdm
-from imutils.video import VideoStream
 import os
-import cv2
-from U0_frame_iterator import Streamer
+from source.U1_smart_cuts import composite_video
 
-target_col = "Close-Up"
-target_col = "Extreme Close-Up"
-##target_col = "Extreme Wide"
+
+#import cv2
+#from imutils.video import VideoStream
+#from moviepy.editor import VideoFileClip, concatenate_videoclips
+
+#target_col = "Close-Up"
+#target_col = "Extreme Wide"
 #target_col = "Long"
+#target_col = "Medium"
+#target_col = "Medium Close-Up"
+target_col = "Extreme Close-Up"
 
 min_length = 1.0
 #min_length = 0.0
 
-frame_cutoff = 10000*1000
-
 f_movie = "data/movies/Die.Hard.1988.720p.BRRip.x264-x0r.mkv"
+f_output = f'demo_movies/demo_{target_col}.mp4'
 
-args = {
-    'codec' : 'MJPG',
-    #'codec' : 'H264',
-    #'codec' : 'X264',
-    #'codec' : 'avc1',
-    
-    'f_output' : f'demo_{target_col}.mp4',
-}
-# Codec info: https://stackoverflow.com/a/30106506/249341
-fourcc = cv2.VideoWriter_fourcc(*args["codec"])
-writer = None
-(h, w) = (None, None)
-zeros = None
-
-if os.path.exists(args['f_output']):
-    os.system(f'rm -vf '+args['f_output'])
+if os.path.exists(f_output):
+    os.system(f'rm -vf {f_output}')
 
 
 df = pd.read_csv("DEMO.csv")
-
 
 entropy_vals = {
     "Extreme Close-Up":0.2,
@@ -50,59 +39,48 @@ entropy_vals = {
 
 df = df[df['frame_entropy'] < entropy_vals[target_col]]
 df = df[df[target_col] > 0.90]
-print(len(df))
 df = df[df['Length (seconds)'] >= min_length]
 print(len(df))
+print(df.columns)
 
+T0 = df["Start Timecode"]
+DURATION = df["Length (timecode)"]
 
-n_frames = int(df.iloc[-1]['Start Frame'] + df.iloc[-1]['Length (frames)'])
+composite_video(f_movie, f_output, T0, DURATION, False)
 
-# Mark which frames we want to keep
-tags = np.zeros(shape=(n_frames*2,), dtype=bool)
-for _,row in df.iterrows():
-    k0 = int(row['Start Frame'])
-    k1 = k0+int(row['Length (frames)'])
-    tags[k0:k1-1] = True
+#print("HERE")
+exit()
 
-# Sanity check
-#assert(tags.sum() == df['Length (frames)'].sum())
+movie = VideoFileClip(f_movie)
 
-movie = Streamer(f_movie, None)
+# Build subclips
+subclips = [
+    movie.subclip(t0, t1) for t0, t1 in
+    tqdm(zip(df["Start Timecode"], df["End Timecode"]))
+]
 
-# Match the FPS of the movie
-args['fps'] = movie.fps
+video = concatenate_videoclips(subclips)
+print(video)
+print(f"Wrote {video.duration:0.2f}s out of {movie.duration:0.2f}s")
 
-frames_written = 0
+#help(video.write_videofile)
 
-for i, frame in tqdm(movie):
-    
-    if i > frame_cutoff:break
-    
-    if not tags[i]:
-        continue
+video.write_videofile(f_output, fps=movie.fps,
+                      #codec='libx264',
+                      codec='rawvideo',
+                      ffmpeg_params=['-strict', '-2'],
+                      #preset='veryslow',
+                      #ffmpeg_params=['-crf', '18']
+)
+exit()
 
-    # check if the writer is None
-    if writer is None:
-        # store the image dimensions, initialize the video writer,
-        # and construct the zeros array
-        (h, w) = frame.shape[:2]
-
-            
-        writer = cv2.VideoWriter(
-            args['f_output'], fourcc, args["fps"], (w, h), True)
-
-        #writer = cv2.VideoWriter.open(
-        #    args['f_output'],0x21,movie.fps,(w,h),True);
-
-        #writer = cv2.VideoWriter(
-        #    args['f_output'],21,movie.fps,(w,h),True);
-
-    # write the output frame to file
-    frame = cv2.cvtColor(frame, cv2.COLOR_RGB2BGR)
-    writer.write(frame)
-
-    frames_written += 1
-
-
-writer.release()
-print(f"Total time written {frames_written/movie.fps}")
+'''
+k = 7
+t_start = df.iloc[k]["Start Timecode"]
+t_end = df.iloc[k]["End Timecode"]
+print(t_start, t_end)
+c1 = clip.subclip(t_start, t_end)
+c1.preview()
+print(c1.duration)
+print(dir(c1))
+'''
