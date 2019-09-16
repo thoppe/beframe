@@ -3,10 +3,23 @@ import numpy as np
 import os
 import scipy.stats
 
-f_movie = "data/movies/Die.Hard.1988.720p.BRRip.x264-x0r.mkv"
+#f_movie = "data/movies/Die.Hard.1988.720p.BRRip.x264-x0r.mkv"
+f_movie = "data/movies/Fight.Club.1999.10th.Ann.Edt.BluRay.720p.H264.mp4"
+
+extension = f_movie.split('.')[-1]
+
 name = os.path.basename(f_movie)
+
+save_dest = 'results/shot_summary'
+os.system(f'mkdir -p {save_dest}')
+f_save = os.path.join(save_dest, name + '.csv')
+
 f_shots = os.path.join("data/shot_detection/", name + ".csv")
-f_scenes = os.path.join("data/scene_change/", name, name.replace(".mkv", "-Scenes.csv"))
+f_scenes = os.path.join(
+    "data/scene_change/",
+    name,
+    name.replace("."+extension, "-Scenes.csv")
+)
 
 
 df = pd.read_csv(f_shots)
@@ -16,8 +29,7 @@ df.frame_n -= 1
 df = df.set_index("frame_n")
 cols = df.columns
 
-keep_cols = ["Start Frame", "Scene Number", "Length (frames)", "Length (seconds)"]
-scenes = pd.read_csv(f_scenes, skiprows=1)  # usecols=keep_cols)
+scenes = pd.read_csv(f_scenes, skiprows=1)
 
 # Fill in the scene information onto the shot dataframe
 df["scene_n"] = None
@@ -38,16 +50,7 @@ for _, dx in df.groupby("scene_n"):
 scenes["frame_entropy"] = entropy
 
 scenes = scenes.set_index("Scene Number").round(4)
-scenes.to_csv("DEMO.csv", float_format="%0.4f")
-print(scenes)
-exit()
 
+scenes.to_csv(f_save, float_format="%0.4f")
 
-# print(df.groupby('scene_n').size())
-import seaborn as sns
-import pylab as plt
-
-x = df.groupby("scene_n").size().sort_values() / 24.0
-print("Median scene duration", x.median())
-sns.distplot(x)
-plt.show()
+print(f"Saved to {f_save}")

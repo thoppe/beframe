@@ -19,9 +19,11 @@ def composite_video(f_movie, f_save, T0, T1, is_high_quality=True, cutoff=None):
 
     input_names = []
 
-    for i, (t0, t1) in tqdm(enumerate(zip(T0, T1))):
+    quiet_args = " -hide_banner -loglevel panic "
+
+    for i, (t0, t1) in tqdm(enumerate(zip(T0, T1)), total=n_videos):
         f_clip = os.path.join(dest.name, f"{i:08d}.mp4")
-        cmd = f"ffmpeg -i {f_movie} {encode_args} -ss {t0} -t {t1} {f_clip}"
+        cmd = f"ffmpeg -i {f_movie} {encode_args} {quiet_args} -ss {t0} -t {t1} {f_clip}"
         os.system(cmd)
 
         f_clip = os.path.basename(f_clip)
