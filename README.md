@@ -10,3 +10,7 @@ https://github.com/Breakthrough/PySceneDetect
 
 # PYMOVIE
 https://zulko.github.io/moviepy/
+
+
+# Update ffmpeg for ubuntu 18.04
+https://linuxize.com/post/how-to-install-ffmpeg-on-ubuntu-18-04/
