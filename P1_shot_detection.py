@@ -6,18 +6,19 @@ import os
 import fastai
 from fastai.vision import pil2tensor, Image as fastImage
 
-from U0_frame_iterator import Streamer
+from source.U0_frame_iterator import Streamer
 
 learn = fastai.basic_train.load_learner(
-    "models/shot-type-classifier/", file="shot-type-classifier.pkl")
+    "models/shot-type-classifier/", file="shot-type-classifier.pkl"
+)
 
-#f_movie = "data/movies/Die.Hard.1988.720p.BRRip.x264-x0r.mkv"
+# f_movie = "data/movies/Die.Hard.1988.720p.BRRip.x264-x0r.mkv"
 f_movie = "data/movies/Fight.Club.1999.10th.Ann.Edt.BluRay.720p.H264.mp4"
 
 save_dest = f"data/shot_detection"
 os.system(f"mkdir -p {save_dest}")
 
-f_save = os.path.join(save_dest, os.path.basename(f_movie) + '.csv')
+f_save = os.path.join(save_dest, os.path.basename(f_movie) + ".csv")
 
 data = []
 for n, frame in tqdm(Streamer(f_movie, None)):
@@ -34,11 +35,10 @@ for n, frame in tqdm(Streamer(f_movie, None)):
         item[k] = prob[i]
 
     data.append(item)
-    #if len(data)> 10:
+    # if len(data)> 10:
     #    break
 
 df = pd.DataFrame(data).set_index("frame_n")
 df.to_csv(f_save)
 print(df)
 print(f"Saved to {f_save}")
-

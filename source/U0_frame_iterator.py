@@ -1,8 +1,8 @@
 import cv2
 import os
 
-class Streamer:
 
+class Streamer:
     def __init__(self, f_movie, frame_speed=None):
 
         assert os.path.exists(f_movie)
@@ -11,7 +11,7 @@ class Streamer:
         if not frame_speed:
             self.frame_capture_unit = 1
         else:
-            self.frame_capture_unit = int(frame_speed*self.fps)
+            self.frame_capture_unit = int(frame_speed * self.fps)
 
     @property
     def n_frames(self):
@@ -38,9 +38,8 @@ class Streamer:
                 break
 
             n += 1
-            
+
             if n % self.frame_capture_unit > 0:
                 continue
-            
-            yield n, frame
 
+            yield n, frame
