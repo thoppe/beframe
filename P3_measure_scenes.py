@@ -14,20 +14,19 @@ save_dest = 'results/shot_summary'
 os.system(f'mkdir -p {save_dest}')
 f_save = os.path.join(save_dest, name + '.csv')
 
-f_shots = os.path.join("data/shot_detection/", name + ".csv")
+f_shots = os.path.join("data/shot_detection/", name + ".npy")
 f_scenes = os.path.join(
     "data/scene_change/",
     name,
     name.replace("."+extension, "-Scenes.csv")
 )
 
-
-df = pd.read_csv(f_shots)
-
-# Shot detection frames are off by one
-df.frame_n -= 1
-df = df.set_index("frame_n")
-cols = df.columns
+cols = [
+    'Close-Up', 'Extreme Close-Up', 'Extreme Wide', 'Long', 'Medium',
+    'Medium Close-Up'
+]
+df = pd.DataFrame(data=np.load(f_shots), columns=cols, dtype=float)
+df.index.name = 'frame_n'
 
 scenes = pd.read_csv(f_scenes, skiprows=1)
 

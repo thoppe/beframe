@@ -3,8 +3,12 @@ import pixelhouse as ph
 import os
 
 target_col = "Long"
+f_movie = "data/movies/Fight.Club.1999.10th.Ann.Edt.BluRay.720p.H264.mp4"
 
-df = pd.read_csv("DEMO.csv")
+name = os.path.basename(f_movie)
+f_info = os.path.join('results/shot_summary', name+'.csv')
+df = pd.read_csv(f_info)
+
 
 total_time = df["Length (seconds)"].sum() / 60
 print(f"Total time {total_time:0.2f}")
@@ -44,7 +48,8 @@ for _, row in df.iterrows():
     n = int(row["Scene Number"])
 
     for k in range(1, 4):
-        f_img = f"data/scene_change/Die.Hard.1988.720p.BRRip.x264-x0r.mkv/Die.Hard.1988.720p.BRRip.x264-x0r-Scene-{n:04d}-{k:02d}.jpg"
+        print(k)
+        f_img = f"data/scene_change/{name}/Die.Hard.1988.720p.BRRip.x264-x0r-Scene-{n:04d}-{k:02d}.jpg"
 
         assert os.path.exists(f_img)
         c = ph.load(f_img)

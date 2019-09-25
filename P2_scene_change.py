@@ -4,6 +4,7 @@ is_debug = False
 
 # f_movie = "data/movies/Die.Hard.1988.720p.BRRip.x264-x0r.mkv"
 f_movie = "data/movies/Fight.Club.1999.10th.Ann.Edt.BluRay.720p.H264.mp4"
+f_movie = "movies/Pretty.Woman.1990.Bluray.720p.H264.mp4"
 
 save_dest = f"data/scene_change/{os.path.basename(f_movie)}"
 os.system(f"mkdir -p {save_dest}")
