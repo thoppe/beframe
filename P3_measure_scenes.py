@@ -56,7 +56,7 @@ def compute(f_shots, f1):
 
 P = Pipeline(
     load_dest="data/shot_detection",
-    save_dest="data/shot_summary",
+    save_dest="data/info_scenes",
     old_extension="npy",
     new_extension="csv",
-)(compute, 1)
+)(compute, -1)
