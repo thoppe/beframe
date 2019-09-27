@@ -6,7 +6,7 @@ target_col = "Long"
 f_movie = "data/movies/Fight.Club.1999.10th.Ann.Edt.BluRay.720p.H264.mp4"
 
 name = os.path.basename(f_movie)
-f_info = os.path.join('results/shot_summary', name+'.csv')
+f_info = os.path.join("results/shot_summary", name + ".csv")
 df = pd.read_csv(f_info)
 
 

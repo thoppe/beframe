@@ -17,7 +17,7 @@ learn = fastai.basic_train.load_learner(
 # f_movie = "data/movies/Die.Hard.1988.720p.BRRip.x264-x0r.mkv"
 
 f_movie = sys.argv[1]
-assert(os.path.exists(f_movie))
+assert os.path.exists(f_movie)
 
 save_dest = f"data/shot_detection"
 os.system(f"mkdir -p {save_dest}")
@@ -43,15 +43,19 @@ for n, frame in tqdm(Streamer(f_movie, None)):
     #    break
 
 cols = [
-    'Close-Up', 'Extreme Close-Up', 'Extreme Wide', 'Long', 'Medium',
-    'Medium Close-Up'
+    "Close-Up",
+    "Extreme Close-Up",
+    "Extreme Wide",
+    "Long",
+    "Medium",
+    "Medium Close-Up",
 ]
 
 df = pd.DataFrame(data).set_index("frame_n")
 
 # Make sure the column order is correct
 df = df[cols]
-#df.to_csv(f_save)
+# df.to_csv(f_save)
 
 # Save the data to a lower resolution numpy array
 x = df.values.astype(np.float16)
