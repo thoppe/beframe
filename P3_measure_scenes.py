@@ -48,9 +48,9 @@ def compute(f_shots, f1):
         entropy.append(np.average(ent))
     scenes["frame_entropy"] = entropy
 
-    scenes = scenes.set_index("Scene Number").round(4)
+    scenes = scenes.set_index("Scene Number") #.round(4)
 
-    scenes.to_csv(f1, float_format="%0.4f")
+    scenes.to_csv(f1)#, float_format="%0.4f")
     print(f"Saved to {f1}")
 
 
@@ -59,4 +59,4 @@ P = Pipeline(
     save_dest="data/info_scenes",
     old_extension="npy",
     new_extension="csv",
-)(compute, -1)
+)(compute, 1)
