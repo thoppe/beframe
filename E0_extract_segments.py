@@ -1,7 +1,7 @@
 import pandas as pd
 import numpy as np
 from tqdm import tqdm
-import os
+import os, sys
 from source.U1_smart_cuts import composite_video
 
 min_length = 1.0
@@ -9,7 +9,8 @@ is_HQ = False
 cutoff = None
 
 # f_movie = "data/movies/Die.Hard.1988.720p.BRRip.x264-x0r.mkv"
-f_movie = "data/movies/Fight.Club.1999.10th.Ann.Edt.BluRay.720p.H264.mp4"
+f_movie = sys.argv[1]
+assert os.path.exists(f_movie)
 
 name = os.path.basename(f_movie)
 f_info = os.path.join("results/shot_summary", name + ".csv")
