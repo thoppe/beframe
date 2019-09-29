@@ -14,7 +14,7 @@ def compute(f_shots, f1):
     )
 
     if not os.path.exists(f_scenes):
-        print(f"Missing {f_scene}")
+        print(f"Missing {f_scenes}")
         return False
 
     cols = [

@@ -8,12 +8,6 @@ from source.U1_smart_cuts import extract_clip
 def extract_scenes(target_col):
 
     named_col = target_col.replace(" ", "-")
-    # f_output = os.path.join(save_dest, f"{named_col}.mp4")
-
-    # if os.path.exists(f_output):
-    #    return False
-    #    continue
-    # print(f_output)
 
     # Filter for low entropy, high average shot, and min length
     dx = df.copy()
@@ -23,23 +17,15 @@ def extract_scenes(target_col):
 
     print(f"Extracting {len(dx)} scenes from {f_movie}")
 
-    for _, row in dx.iterrows():
+    for _, row in tqdm(dx.iterrows()):
         n = row["Scene Number"]
-        f_clip = os.path.join(save_dest, f"{named_col}_{n:05n}.mp4")
 
+        f_clip = os.path.join(save_dest, f"{named_col}_{n:05n}.mp4")
         if os.path.exists(f_clip):
             continue
 
-        # t0 = row["Start Timecode"]
-        # t1 = row["Length (timecode)"]
-
-        t0 = row["Start Frame"]
-        t1 = row["End Frame"]
-
-        extract_clip(f_movie, f_clip, t0, t1)
-
-        print(f_clip)
-        # exit()
+        extract_clip(f_movie, f_clip, row)
+        # if n >= 300: break
 
     # composite_video(
     #    f_movie, f_output, T0, DURATION, is_high_quality=is_HQ, cutoff=cutoff
@@ -50,10 +36,7 @@ def extract_scenes(target_col):
 
 
 min_length = 1.0
-is_HQ = True
-cutoff = None
 
-# f_movie = "data/movies/Die.Hard.1988.720p.BRRip.x264-x0r.mkv"
 f_movie = sys.argv[1]
 assert os.path.exists(f_movie)
 
@@ -63,12 +46,11 @@ assert os.path.exists(f_info)
 
 df = pd.read_csv(f_info)
 
-
-split_name = '.'.join(name.split('.')[:-1])
-f_keyframes = os.path.join('data/keyframes/', split_name + '.json')
-assert os.path.exists(f_keyframes)
-with open(f_keyframes, 'r') as FIN:
-    keyframes = json.load(FIN)['keyframes']
+# split_name = '.'.join(name.split('.')[:-1])
+# f_keyframes = os.path.join('data/keyframes/', split_name + '.json')
+# assert os.path.exists(f_keyframes)
+# with open(f_keyframes, 'r') as FIN:
+#    keyframes = json.load(FIN)['keyframes']
 
 save_dest = f"data/clips/{name}"
 os.system(f"mkdir -p {save_dest}")
