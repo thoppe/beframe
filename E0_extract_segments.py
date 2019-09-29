@@ -1,7 +1,7 @@
 import pandas as pd
 import numpy as np
 from tqdm import tqdm
-import os, sys
+import os, sys, json
 from source.U1_smart_cuts import extract_clip
 
 
@@ -59,7 +59,16 @@ assert os.path.exists(f_movie)
 
 name = os.path.basename(f_movie)
 f_info = os.path.join("data/info_scenes/", name + ".csv")
+assert os.path.exists(f_info)
+
 df = pd.read_csv(f_info)
+
+
+split_name = '.'.join(name.split('.')[:-1])
+f_keyframes = os.path.join('data/keyframes/', split_name + '.json')
+assert os.path.exists(f_keyframes)
+with open(f_keyframes, 'r') as FIN:
+    keyframes = json.load(FIN)['keyframes']
 
 save_dest = f"data/clips/{name}"
 os.system(f"mkdir -p {save_dest}")
