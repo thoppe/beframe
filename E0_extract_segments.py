@@ -4,15 +4,16 @@ from tqdm import tqdm
 import os, sys
 from source.U1_smart_cuts import extract_clip
 
+
 def extract_scenes(target_col):
 
     named_col = target_col.replace(" ", "-")
-    #f_output = os.path.join(save_dest, f"{named_col}.mp4")
+    # f_output = os.path.join(save_dest, f"{named_col}.mp4")
 
-    #if os.path.exists(f_output):
+    # if os.path.exists(f_output):
     #    return False
     #    continue
-    #print(f_output)
+    # print(f_output)
 
     # Filter for low entropy, high average shot, and min length
     dx = df.copy()
@@ -29,21 +30,21 @@ def extract_scenes(target_col):
         if os.path.exists(f_clip):
             continue
 
-        t0 = row["Start Timecode"]
-        t1 = row["Length (timecode)"]
+        # t0 = row["Start Timecode"]
+        # t1 = row["Length (timecode)"]
 
-        #t0 = row["Start Frame"]
-        #t1 = row["End Frame"]
+        t0 = row["Start Frame"]
+        t1 = row["End Frame"]
 
         extract_clip(f_movie, f_clip, t0, t1)
-        
+
         print(f_clip)
-        #exit()
+        # exit()
 
-
-    #composite_video(
+    # composite_video(
     #    f_movie, f_output, T0, DURATION, is_high_quality=is_HQ, cutoff=cutoff
-    #)
+    # )
+
 
 ##########################################################################
 
@@ -73,5 +74,4 @@ entropy_vals = {
     "Medium Close-Up": 0.6,  # Good, character interactions
 }
 
-extract_scenes('Medium Close-Up')
-
+extract_scenes("Medium Close-Up")

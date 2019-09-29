@@ -12,6 +12,8 @@ def extract_clip(f_movie, f_save, t0, t1, is_high_quality=True):
 
     video = cv2.VideoCapture(f_movie)
     fps = video.get(cv2.CAP_PROP_FPS)
+
+    '''
     T0 = FrameTimecode(t0, fps)
     T1 = FrameTimecode(t1, fps)
 
@@ -19,16 +21,20 @@ def extract_clip(f_movie, f_save, t0, t1, is_high_quality=True):
     print(T0)
     print(T0-1)
     print(T1, t1)
+    '''
 
     quiet_args = " -hide_banner -loglevel panic "
 
     quiet_args = ""
     encode_args = "-c:v libx264 -c:a aac"
 
-    cut_args = f'-vf select="between(n\,{t0}\,{t1}),setpts=PTS-STARTPTS"'
-        
+    #cut_args = f'-vf select="between(n\,{t0}\,{t1}),setpts=PTS-STARTPTS"'
+    #f"ffmpeg -y -ss {T0} -i {f_movie} -strict -2 -t {T1} -sn "
+    
+    cut_args = f'-vf trim=duration=1'
+    
     cmd = (
-        f"ffmpeg -y -ss {T0} -i {f_movie} -strict -2 -t {T1} -sn "
+        f"ffmpeg -i {f_movie} {cut_args} "
         f"{f_save}"
     )
     print(cmd)
