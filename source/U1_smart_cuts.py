@@ -8,6 +8,13 @@ import cv2
 # def extract_clip(f_movie, f_save, t0, t1, keyframes, is_high_quality=True):
 
 
+def extract_audio(f_movie, f_output):
+    # low_res is for deepspeech
+    quiet_args = " -hide_banner -loglevel panic "
+    cmd = f"ffmpeg -y -i {f_movie} -f wav -ac 1 -ar 16000 -vn {f_output} {quiet_args}"
+    os.system(cmd)
+
+
 def extract_clip(f_movie, f_save, row):
 
     f_save = os.path.abspath(f_save)

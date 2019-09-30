@@ -5,7 +5,13 @@ import joblib
 
 class Pipeline:
     def __init__(
-        self, load_dest, save_dest, old_extension=None, new_extension=None, shuffle=True
+        self,
+        load_dest,
+        save_dest,
+        old_extension=None,
+        new_extension=None,
+        shuffle=True,
+        save_only=False,
     ):
 
         self.save_dest = save_dest
@@ -15,11 +21,14 @@ class Pipeline:
 
         os.system(f"mkdir -p {save_dest}")
 
-        old_glob = f"*.{old_extension}" if old_extension else "*"
         new_glob = f"*.{new_extension}" if new_extension else "*"
-
-        F_IN = glob.glob(os.path.join(load_dest, old_glob))
         F_OUT = glob.glob(os.path.join(save_dest, new_glob))
+
+        if save_only:
+            F_IN = load_dest
+        else:
+            old_glob = f"*.{old_extension}" if old_extension else "*"
+            F_IN = glob.glob(os.path.join(load_dest, old_glob))
 
         F_IN = sorted(F_IN)
 
