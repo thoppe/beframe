@@ -49,42 +49,25 @@ def segmented_iterator(f_movie, df):
     name = os.path.basename(f_movie)
     save_dest = f"data/clips/{name}"
     os.system(f"mkdir -p {save_dest}")
+    
+    for _, row in df.iterrows():
 
-    N = df["End Frame"].max()
-    is_target = np.zeros(shape=N, dtype=int)
-    for i, j, k in zip(df["Start Frame"], df["End Frame"], df["Scene Number"]):
-        is_target[i:j] = k
-
-    print(f"Extracting {(is_target>0).mean():0.3f} fraction")
-
-    stream = cv2.VideoCapture(f_movie)
-    # estimated_total_frames = int(stream.get(cv2.CAP_PROP_FRAME_COUNT))
-    # FPS = int(stream.get(cv2.CAP_PROP_FPS))
-    # import imutils
-
-    scene_n = None
-
-    for i in tqdm(range(N)):
-        # grab the frame from the threaded video file stream
-        (grabbed, frame) = stream.read()
-
-        if not grabbed:
-            break
-
-        if not is_target[i]:
-            idx = 0
+        scene_n = row['Scene Number']
+        f_save = os.path.join(save_dest, f"{scene_n:04d}.wav")
+        
+        if os.path.exists(f_save):
             continue
 
-        if scene_n != is_target[i]:
-            print(f"Starting scene {is_target[i]}")
+        print(f"Starting {scene_n}")
+        
+        t0, t1 = row["Start Timecode"], row["Length (timecode)"]
+        #t0, t1 = row["Start Timecode"], row["End Timecode"]
+        
+        quiet =" -hide_banner -loglevel panic "
 
-        scene_n = is_target[i]
-
-        img = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-        f_save = os.path.join(save_dest, f"{scene_n:04d}_{idx:06d}.png")
-
-        cv2.imwrite(f_save, frame)
-        idx += 1
+        cmd = f'ffmpeg {quiet} -ss {t0} -i {f_movie} -vn -t {t1} {f_save}'
+        #cmd = f'ffmpeg {quiet} -i {f_movie} -vn -ss {t0} -t {t1} {f_save}'
+        os.system(cmd)
 
 
 ##########################################################################
@@ -94,7 +77,6 @@ f_movie = sys.argv[1]
 assert os.path.exists(f_movie)
 
 df = select_shots(f_movie, target_col)
-print(f"Extracting {len(df)} scenes from {f_movie}")
-
+print(f"Extracting {len(df)} audio clips from {f_movie}")
 
 segmented_iterator(f_movie, df)
