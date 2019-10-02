@@ -47,7 +47,7 @@ def segmented_iterator(f_movie, df):
 
     # Create the target directory
     name = os.path.basename(f_movie)
-    save_dest = f"data/clips/{name}"
+    save_dest = f"data/frames/{name}"
     os.system(f"mkdir -p {save_dest}")
 
     N = df["End Frame"].max()
@@ -55,6 +55,7 @@ def segmented_iterator(f_movie, df):
     for i, j, k in zip(df["Start Frame"], df["End Frame"], df["Scene Number"]):
         is_target[i:j] = k
 
+    print("Frame extraction points", df["Start Frame"].values)
     print(f"Extracting {(is_target>0).mean():0.3f} fraction")
 
     stream = cv2.VideoCapture(f_movie)
@@ -72,15 +73,16 @@ def segmented_iterator(f_movie, df):
             break
 
         if not is_target[i]:
-            idx = 0
             continue
 
         if scene_n != is_target[i]:
             print(f"Starting scene {is_target[i]}")
+            idx = 0
 
         scene_n = is_target[i]
 
         img = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+
         f_save = os.path.join(save_dest, f"{scene_n:04d}_{idx:06d}.png")
 
         cv2.imwrite(f_save, frame)
@@ -89,12 +91,11 @@ def segmented_iterator(f_movie, df):
 
 ##########################################################################
 
+if __name__ == "__main__":
+    f_movie = sys.argv[1]
+    assert os.path.exists(f_movie)
 
-f_movie = sys.argv[1]
-assert os.path.exists(f_movie)
+    df = select_shots(f_movie, target_col)
+    print(f"Extracting {len(df)} scenes from {f_movie}")
 
-df = select_shots(f_movie, target_col)
-print(f"Extracting {len(df)} scenes from {f_movie}")
-
-
-segmented_iterator(f_movie, df)
+    segmented_iterator(f_movie, df)

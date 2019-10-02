@@ -7,6 +7,9 @@ import numpy as np
 import io, os, sys, json
 from source.pipeline import Pipeline
 
+os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "MovieTags-ce65c97a4c6b.json"
+assert "GOOGLE_APPLICATION_CREDENTIALS" in os.environ
+
 # Imports the Google Cloud client library
 from google.cloud import speech
 from google.cloud.speech import enums
@@ -29,7 +32,10 @@ def compute(f_wav, f1):
         content = audio_file.read()
 
     audio = types.RecognitionAudio(content=content)
-    config = types.RecognitionConfig(sample_rate_hertz=48000, language_code="en-US")
+    config = types.RecognitionConfig(
+        # sample_rate_hertz=48000,
+        language_code="en-US"
+    )
 
     # Detects speech in the audio file
     response = client.recognize(config, audio)
@@ -47,23 +53,21 @@ def compute(f_wav, f1):
         FOUT.write(js)
 
 
-#compute("data/clips/Pretty.Woman.1990.Bluray.720p.H264.mp4/0116.wav", None)
-#exit()
+if __name__ == "__main__":
 
-# Get the framerate
-f_movie = sys.argv[1]
-assert os.path.exists(f_movie)
+    # Get the framerate
+    f_movie = sys.argv[1]
+    assert os.path.exists(f_movie)
 
+    name = os.path.basename(f_movie)
+    save_dest = f"data/google_speech/{name}"
+    load_dest = f"data/audio/{name}"
 
-name = os.path.basename(f_movie)
-save_dest = f"data/google_speech/{name}"
-load_dest = f"data/clips/{name}"
-
-P = Pipeline(
-    load_dest=load_dest,
-    save_dest=save_dest,
-    old_extension="wav",
-    new_extension="json",
-    shuffle=False,
-    #limit=3,
-)(compute, 1)
+    P = Pipeline(
+        load_dest=load_dest,
+        save_dest=save_dest,
+        old_extension="wav",
+        new_extension="json",
+        shuffle=False,
+        # limit=3,
+    )(compute, 1)
