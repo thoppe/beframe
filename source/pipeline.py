@@ -12,6 +12,7 @@ class Pipeline:
         new_extension=None,
         shuffle=True,
         save_only=False,
+        limit=None,
     ):
 
         self.save_dest = save_dest
@@ -37,6 +38,9 @@ class Pipeline:
 
         F_OUT = set(F_OUT)
         self.ITR = [f for f in F_IN if self.get_output_file(f) not in F_OUT]
+
+        if limit:
+            self.ITR = self.ITR[:limit]
 
     def __len__(self):
         return len(self.ITR)
